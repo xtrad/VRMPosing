@@ -1,0 +1,69 @@
+Catatan VRMPosing – Status & Riwayat
+1. Proyek
+
+Nama folder: VRMPosing
+
+Environment: React (Vite), menggunakan Three.js + @pixiv/three-vrm
+
+Tujuan: Viewer VRM models dengan kemampuan switch model (male/female)
+
+File utama:
+
+App.jsx → mengatur dropdown model, passing modelUrl ke VRMViewer
+
+components/VRMViewer.jsx → menampilkan VRM, handling load / cleanup
+
+Models ada di public/models/:
+
+vrm0_male_00.vrm / vrm0_female_00.vrm (dan varian 01)
+
+2. Git Backup
+
+Branch backup dibuat sebelum perbaikan switch model:
+
+Nama branch: backup_before_model_switch
+
+Commit message: "Backup sebelum perbaikan model switch"
+
+Backup mencakup model VRM baru (female_00.vrm, female_01.vrm) dan rename beberapa file lama (character_v0.vrm → vrm0_male_00.vrm)
+
+3. Masalah yang Dihadapi
+
+Switch model di dropdown menyebabkan:
+
+Error Cannot read properties of null (reading 'removeChild') saat unmount VRM lama
+
+Kadang model tidak muncul sama sekali, hanya outline
+
+Content Security Policy warning (unsafe-eval blocked) muncul di browser, tapi tidak menimbulkan crash
+
+Masalah hilang jika default model diganti langsung ke female_00.vrm
+
+4. Solusi / Perbaikan
+
+VRMViewer.jsx diperbarui untuk:
+
+Loading indicator saat model dimuat
+
+Cleanup aman ketika model di-switch
+
+Camera, lighting, dan scale disesuaikan supaya model selalu terlihat
+
+Menghindari error removeChild dengan pengecekan sebelum remove
+
+Sekarang switch model lancar, model muncul, loading indicator muncul saat load
+
+5. Catatan Tambahan
+
+Index.html masih menggunakan:
+
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval';">
+
+
+→ Supaya Three.js / VRM loader dapat menggunakan eval jika perlu, tapi ini CSP warning di browser.
+
+Kalau nanti kamu mulai chat baru, tinggal sebutkan:
+
+“Lanjutkan proyek VRMPosing, terakhir kita sudah buat VRMViewer dengan loading indicator dan switch model aman, backup ada di branch backup_before_model_switch.”
+
+Dengan begitu aku langsung paham konteks dan riwayat Gitnya.

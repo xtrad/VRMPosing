@@ -1,0 +1,49 @@
+Status Fitur & Fixes
+
+App.jsx
+
+Dropdown switch model VRM (male_00, female_00) ✅
+
+useState untuk modelUrl ✅
+
+Perubahan model berhasil, sudah muncul di viewer ✅
+
+VRMViewer.jsx
+
+Menampilkan VRM model dengan Three.js / @pixiv/three-vrm ✅
+
+Loading indicator sudah ditambahkan ✅
+
+Bug removeChild of null sudah diperbaiki ✅
+
+Models
+
+public/models/vrm0_male_00.vrm ✅
+
+public/models/vrm0_female_00.vrm ✅
+
+Backup branch: backup_before_model_switch ✅
+
+CSP & Browser
+
+index.html menggunakan <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval';"> untuk mengizinkan loader ✅
+
+Browser console sebelumnya ada warning CSP & form id/name, tapi tidak menghalangi model load ⚠️
+
+Git
+
+Master branch up-to-date ✅
+
+Backup branch backup_before_model_switch menyimpan versi sebelum perbaikan switch model ✅
+
+Next Step / To-Do
+
+Tambahkan fitur multiple model viewer (opsional: lebih dari 2 model sekaligus)
+
+Optimasi loader & performance untuk VRM besar
+
+Periksa error handling jika file VRM gagal load
+
+Tambahkan UI/UX polish: ukuran canvas responsif, kontrol kamera, tombol reset pose
+
+Dokumentasi README.md update: cara switch model, branch backup, struktur folder
