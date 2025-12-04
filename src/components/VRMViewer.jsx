@@ -1,77 +1,67 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { VRM } from "@pixiv/three-vrm";
 
-const VRMViewer = ({ modelUrl }) => {
-  const mountRef = useRef(null);
-  const [vrm, setVrm] = useState(null);
+export default function VRMViewer({ modelUrl }) {
+  const mountRef = useRef();
+  const vrmRef = useRef();
 
   useEffect(() => {
-    if (!mountRef.current) return;
+    const width = mountRef.current.clientWidth;
+    const height = mountRef.current.clientHeight;
 
-    // Scene & Camera
+    // Scene
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      45,
-      mountRef.current.clientWidth / mountRef.current.clientHeight,
-      0.1,
-      1000
-    );
-    camera.position.set(0, 1.4, 2);
+    scene.background = new THREE.Color(0xdddddd);
+
+    // Camera
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    camera.position.set(0, 1.5, 3);
 
     // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(
-      mountRef.current.clientWidth,
-      mountRef.current.clientHeight
-    );
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(width, height);
     mountRef.current.appendChild(renderer.domElement);
 
     // Light
     const light = new THREE.DirectionalLight(0xffffff);
-    light.position.set(0, 1, 1).normalize();
+    light.position.set(1, 1, 1);
     scene.add(light);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
-    // Load VRM
+    let mixer;
+
     const loader = new GLTFLoader();
-    loader.load(
-      modelUrl,
-      (gltf) => {
-        VRM.from(gltf).then((loadedVrm) => {
-          loadedVrm.scene.rotation.y = Math.PI; // orientasi default
-          scene.add(loadedVrm.scene);
-          setVrm(loadedVrm);
-        });
-      },
-      undefined,
-      (error) => {
-        console.error("Failed to load VRM:", error);
+    loader.load(modelUrl, (gltf) => {
+      // Hapus model lama
+      if (vrmRef.current) {
+        scene.remove(vrmRef.current.scene);
       }
-    );
 
-    // Animate
+      VRM.from(gltf).then((vrm) => {
+        vrmRef.current = vrm;
+        scene.add(vrm.scene);
+      });
+    });
+
     const clock = new THREE.Clock();
+
     const animate = () => {
-      if (vrm) {
-        vrm.update(clock.getDelta());
-      }
-      renderer.render(scene, camera);
       requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      if (mixer) mixer.update(delta);
+      renderer.render(scene, camera);
     };
+
     animate();
 
-    // Cleanup
     return () => {
-      renderer.dispose();
-      if (mountRef.current && renderer.domElement.parentElement) {
-        mountRef.current.removeChild(renderer.domElement);
-      }
-      setVrm(null);
+      // Bersihkan
+      if (renderer.domElement) mountRef.current.removeChild(renderer.domElement);
+      vrmRef.current = null;
     };
-  }, [modelUrl, vrm]);
+  }, [modelUrl]);
 
   return <div ref={mountRef} style={{ width: "100%", height: "100%" }} />;
-};
-
-export default VRMViewer;
+}
