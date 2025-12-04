@@ -1,11 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import VRMViewer from "./components/VRMViewer";
 
 function App() {
+  const [modelUrl, setModelUrl] = useState("/models/vrm0_male_00.vrm"); // path VRM
+
+  // Kalau mau ganti model
+  const handleChangeModel = (e) => {
+    setModelUrl(e.target.value);
+  };
+
   return (
-    <div className="App">
-      <h1>VRM Viewer v0.1</h1>
-      <VRMViewer modelPath="/models/character_v0.vrm" />
+    <div style={{ width: "100vw", height: "100vh", overflow: "hidden" }}>
+      {/* Dropdown / input ganti model VRM */}
+      <div style={{ position: "absolute", zIndex: 1, padding: 10 }}>
+        <select onChange={handleChangeModel} value={modelUrl}>
+          <option value="/models/vrm0_male_00.vrm">Male 00</option>
+          <option value="/models/vrm0_male_01.vrm">Male 01</option>
+          <option value="/models/vrm0_female_00.vrm">Female 00</option>
+          <option value="/models/vrm0_female_01.vrm">Female 01</option>
+        </select>
+      </div>
+
+      {/* Viewer */}
+      <VRMViewer modelUrl={modelUrl} />
     </div>
   );
 }
